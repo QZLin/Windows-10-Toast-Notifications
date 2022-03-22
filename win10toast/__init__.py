@@ -9,9 +9,12 @@ __all__ = ['ToastNotifier']
 # ##################################
 # standard library
 import logging
+import sys
 import threading
 from os import path
 from time import sleep
+
+import win32gui
 from pkg_resources import Requirement
 from pkg_resources import resource_filename
 
@@ -43,6 +46,7 @@ from win32gui import UnregisterClass
 from win32gui import Shell_NotifyIcon
 from win32gui import UpdateWindow
 from win32gui import WNDCLASS
+
 
 # ############################################################################
 # ########### Classes ##############
@@ -78,7 +82,7 @@ class ToastNotifier(object):
         try:
             self.classAtom = RegisterClass(self.wc)
         except:
-            pass #not sure of this
+            pass  # not sure of this
         style = WS_OVERLAPPED | WS_SYSMENU
         self.hwnd = CreateWindow(self.classAtom, "Taskbar", style,
                                  0, 0, CW_USEDEFAULT,
@@ -87,18 +91,22 @@ class ToastNotifier(object):
         UpdateWindow(self.hwnd)
 
         # icon
+        hicon = LoadIcon(0, IDI_APPLICATION)
         if icon_path is not None:
             icon_path = path.realpath(icon_path)
+            # else:
+            #     icon_path = resource_filename(Requirement.parse("win10toast"), "win10toast/data/python.ico")
+            icon_flags = LR_LOADFROMFILE | LR_DEFAULTSIZE
+            try:
+                hicon = LoadImage(self.hinst, icon_path,
+                                  IMAGE_ICON, 0, 0, icon_flags)
+            except Exception as e:
+                logging.error("Some trouble with the icon ({}): {}"
+                              .format(icon_path, e))
         else:
-            icon_path =  resource_filename(Requirement.parse("win10toast"), "win10toast/data/python.ico")
-        icon_flags = LR_LOADFROMFILE | LR_DEFAULTSIZE
-        try:
-            hicon = LoadImage(self.hinst, icon_path,
-                              IMAGE_ICON, 0, 0, icon_flags)
-        except Exception as e:
-            logging.error("Some trouble with the icon ({}): {}"
-                          .format(icon_path, e))
-            hicon = LoadIcon(0, IDI_APPLICATION)
+            big_icons, small_icons = win32gui.ExtractIconEx(sys.executable, 0)
+            if big_icons:
+                hicon = big_icons[0]
 
         # Taskbar icon
         flags = NIF_ICON | NIF_MESSAGE | NIF_TIP
@@ -115,7 +123,7 @@ class ToastNotifier(object):
         return None
 
     def show_toast(self, title="Notification", msg="Here comes the message",
-                    icon_path=None, duration=5, threaded=False):
+                   icon_path=None, duration=5, threaded=False):
         """Notification settings.
 
         :title: notification title
@@ -154,4 +162,3 @@ class ToastNotifier(object):
         PostQuitMessage(0)
 
         return None
-

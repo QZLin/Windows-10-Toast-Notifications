@@ -1,9 +1,64 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
-from operator import attrgetter
+# Note: To use the 'upload' functionality of this file, you must:
+#   $ pipenv install twine --dev
+
+import io
+import os
 from os import path
+import sys
+from shutil import rmtree
 
-from pip.req import parse_requirements
-from setuptools import setup
+from setuptools import find_packages, setup, Command
+
+# Package meta-data.
+NAME = 'win10toast'
+DESCRIPTION = (
+    'An easy-to-use Python library for displaying'
+    'Windows 10 Toast Notifications'
+)
+URL = 'https://github.com/jithurjacob/Windows-10-Toast-Notifications'
+EMAIL = 'mtroalson@gmail.com'
+AUTHOR = 'Malcolm Roalson'
+REQUIRES_PYTHON = '>=3.6.0'
+VERSION = '0.9'
+
+# What packages are required for this module to be executed?
+REQUIRED = [
+    "pypiwin32",
+    "setuptools"
+]
+
+# What packages are optional?
+EXTRAS = {
+    # 'fancy feature': ['django'],
+}
+
+# The rest you shouldn't have to touch too much :)
+# ------------------------------------------------
+# Except, perhaps the License and Trove Classifiers!
+# If you do change the License, remember to change the Trove Classifier for that!
+
+here = os.path.abspath(os.path.dirname(__file__))
+
+# Import the README and use it as the long-description.
+# Note: this will only work if 'README.md' is present in your MANIFEST.in file!
+try:
+    with io.open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
+        long_description = '\n' + f.read()
+except FileNotFoundError:
+    long_description = DESCRIPTION
+
+# Load the package's __version__.py module as a dictionary.
+about = {}
+if not VERSION:
+    project_slug = NAME.lower().replace("-", "_").replace(" ", "_")
+    with open(os.path.join(here, project_slug, '__version__.py')) as f:
+        exec(f.read(), about)
+else:
+    about['__version__'] = VERSION
+
 
 def read(fname):
     return open(path.join(path.dirname(__file__), fname)).read()
@@ -13,23 +68,15 @@ def from_here(relative_path):
     return path.join(path.dirname(__file__), relative_path)
 
 
-requirements_txt = list(map(str, map(
-    attrgetter("req"),
-    parse_requirements(from_here("requirements.txt"), session="")
-)))
-
 setup(
-    name="win10toast",
-    version="0.9",
-    install_requires=requirements_txt,
+    name=NAME,
+    version=VERSION,
+    install_requires=REQUIRED,
     packages=["win10toast"],
     license="BSD",
-    url="https://github.com/jithurjacob/Windows-10-Toast-Notifications",
-    download_url = 'https://github.com/jithurjacob/Windows-10-Toast-Notifications/tarball/0.9',
-    description=(
-        "An easy-to-use Python library for displaying "
-        "Windows 10 Toast Notifications"
-    ),
+    url=URL,
+    download_url='https://github.com/jithurjacob/Windows-10-Toast-Notifications/tarball/0.9',
+    description=DESCRIPTION,
     include_package_data=True,
     package_data={
         '': ['*.txt'],
