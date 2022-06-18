@@ -30,7 +30,9 @@ setuptools
 ## Example
 
 ```
+import time
 from win10toast import ToastNotifier
+
 toaster = ToastNotifier()
 toaster.show_toast("Hello World!!!",
                    "Python is 10 seconds awsm!",
@@ -43,7 +45,8 @@ toaster.show_toast("Example two",
                    duration=5,
                    threaded=True)
 # Wait for threaded notification to finish
-while toaster.notification_active(): time.sleep(0.1)
+while toaster.notification_active():
+    time.sleep(0.1)
 ```
 
 ## Contributors [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/jithurjacob/Windows-10-Toast-Notifications/issues)
