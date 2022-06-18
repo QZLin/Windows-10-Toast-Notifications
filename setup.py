@@ -4,7 +4,6 @@ from os import path
 # from pip.req import parse_requirements
 from setuptools import setup
 
-
 def read(fname):
     return open(path.join(path.dirname(__file__), fname)).read()
 
